@@ -3,6 +3,7 @@ const router = express.Router();
 const Jobseeker = require("../models/Jobseeker.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
 // Create a job seeker
 router.post("/jobseeker", async (req, res) => {
@@ -24,6 +25,42 @@ router.post("/jobseeker", async (req, res) => {
     res.status(201).json({ jobseeker, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// GET /profile/jobseeker - Get consultant profile
+// router.get("/jobseeker/profile", isAuthenticated, (req, res) => {
+//   // req.payload contains the user information from the JWT
+//   const jobseekerId = req.payload._id;
+
+//   Jobseeker.findById(jobseekerId)
+//     .select("-password")
+//     .then((jobSeeker) => {
+//       if (!jobSeeker) {
+//         return res.status(404).json({ message: "jobseeker not found." });
+//       }
+//       res.status(200).json(jobSeeker);
+//     })
+//     .catch((error) => {
+//       res.status(500).json({ message: "Internal server error." });
+//     });
+// });
+
+router.get("/jobseeker/profile", isAuthenticated, async (req, res) => {
+  // req.payload contains the user information from the JWT
+  const jobseekerId = req.payload._id;
+
+  try {
+    const jobSeeker = await Jobseeker.findById(jobseekerId).select("-password");
+
+    if (!jobSeeker) {
+      return res.status(404).json({ message: "Jobseeker not found." });
+    }
+
+    // Return an object with a 'jobSeeker' property
+    res.status(200).json({ jobSeeker });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
   }
 });
 
@@ -51,7 +88,7 @@ router.get("/jobseeker/:id", async (req, res) => {
 });
 
 // Update a job seeker by ID
-router.patch("/jobseeker/:id", async (req, res) => {
+router.put("/jobseeker/:id", async (req, res) => {
   try {
     const jobSeeker = await Jobseeker.findByIdAndUpdate(
       req.params.id,

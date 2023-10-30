@@ -17,6 +17,20 @@ const consultantSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  consultantBio: {
+    type: String,
+  },
+
+  profilePicture: {
+    type: String,
+  },
+  coverPicture: {
+    type: String,
+  },
+  cv: {
+    type: String,
+  },
   introductionVideoUrl: {
     type: String,
   },
