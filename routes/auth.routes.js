@@ -47,8 +47,8 @@ router.post("/login", (req, res, next) => {
         return res.status(401).json({ message: "Invalid email or password." });
       }
 
-      const { _id, email, name } = foundUser;
-      const payload = { _id, email, name, userType }; // Include userType in the payload
+      const { _id, email, name, firstName, lastName } = foundUser;
+      const payload = { _id, email, name, userType, firstName, lastName };
 
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: "HS256",
